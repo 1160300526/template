@@ -11,27 +11,12 @@
     <link rel="icon" href="../../favicon.ico">
 
     <title>海量题库</title>
-
     <!-- Bootstrap core CSS -->
     <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
-
     <!-- Custom styles for this template -->
     <link href="jumbotron-narrow.css" rel="stylesheet">
 
-    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
-    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-    <script src="../../assets/js/ie-emulation-modes-warning.js"></script>
-
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-      <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-      <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
   </head>
-
   <body>
 
     <div class="container">
@@ -49,65 +34,78 @@
       <div class="jumbotron">
         <h3>哈尔滨工业大学题库</h3>
         <p class="lead">教师可为题库增添新题、改动原题、删除试题，亦可选择题目组成试卷。</p>
-        <p><a class="btn btn-lg btn-success" onclick="selectProblems()" target="_blank" role="button">显示题目</a></p>
+        <p><a class="btn btn-lg btn-success" onclick="showProblems()" target="_blank" role="button">显示题目</a></p>
         <p><a class="btn btn-lg btn-success" onclick="selectProblems()" role="button">去出试卷</a></p>
       </div>
 
       <div class="row marketing">
         <div class="col-lg-6">
-          <h5><i>科目</i></h5>
-          <p>这是一个题干</p>
-<!--          name相同则选项互斥，可以用题目id来作为name-->
-          <label><input type="radio" name="radio1" value="0"/>选项1</label>
-          <label><input type="radio" name="radio1" value="3"/>选项2</label>
-          <label><input type="radio" name="radio1" value="1"/>选项3</label>
-          <label><input type="radio" name="radio1" value="1"/>选项4</label>
-          <h5><i>科目</i></h5>
-          <p>这是一个题干</p>
-          <label><input type="radio" name="radio2" value="1"/>选项1</label>
-          <label><input type="radio" name="radio2" value="1"/>选项2</label>
-          <label><input type="radio" name="radio2" value="1"/>选项3</label>
-          <label><input type="radio" name="radio2" value="1"/>选项4</label>
-          <div class="select" id="ccc" style="display: none;"><label><input type="checkbox">加入考卷</label></div>
-          <h5><i>科目</i></h5>
-          <p>这是一个题干</p>
-          <label><input type="radio" name="radio3" value="1" checked="checked" />选项1</label>
-          <label><input type="radio" name="radio3" value="1"/>选项2</label>
-          <label><input type="radio" name="radio3" value="1"/>选项3</label>
-          <label><input type="radio" name="radio3" value="1"/>选项4</label>
-          <h5><i>科目</i></h5>
-          <p>这是一个题干</p>
-          <label><input type="radio" name="radio4" value="1"/>选项1</label>
-          <label><input type="radio" name="radio4" value="1"/>选项2</label>
-          <label><input type="radio" name="radio4" value="1"/>选项3</label>
-          <label><input type="radio" name="radio4" value="1"/>选项4</label>
-          <h5><i>科目</i></h5>
-          <p>这是一个题干</p>
-          <label><input type="radio" name="radio5" value="1"/>选项1</label>
-          <label><input type="radio" name="radio5" value="1"/>选项2</label>
-          <label><input type="radio" name="radio5" value="1"/>选项3</label>
-          <label><input type="radio" name="radio5" value="1"/>选项4</label>
+        <div id="problem1"></div>
+
       </div>
 
       <footer class="footer">
         <p>&copy; 哈尔滨工业大学题库网</p>
       </footer>
-
     </div> <!-- /container -->
 
-
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
       <script src="../static/jquery-3.4.1.min.js"></script>
-    <script>
+    <script type="text/javascript">
+
+      $.ajax({
+        url:"/teacher/problems",
+        type:"GET",
+        contentType:'application/json',
+        success:function(retData) {
+          var obj = JSON.parse(retData);
+          var msg = JSON.stringify(obj);
+          alert(msg);
+
+          for(var i=1; i<=obj.problems.length; i++) {
+            var problemFromDB = obj.problems[i - 1];
+            var problem_id = problemFromDB.problem_id;
+            //页面中的题目
+            var problem_type_id = "type_id" + problem_id.toString();
+            // var problem_div_id = problem_id.toString() + i.toString();
+            var content_id = problem_id.toString() + i.toString();
+
+            var option_id1 = problem_id.toString() + i.toString() + "1";
+            var option_id2 = problem_id.toString() + i.toString() + "2";
+            var option_id3 = problem_id.toString() + i.toString() + "3";
+            var option_id4 = problem_id.toString() + i.toString() + "4";
+            alert(option_id1+option_id2);
+
+            document.getElementById("problem1").innerHTML += "<h5 class='test' id="+problem_type_id+"><i>科目</i></h5>" +
+                    "<p id="+content_id+">这是一个题干</p>" +
+                    <!--       name相同则选项互斥，可以用题目id来作为name-->
+
+                    "<label><input type='radio' name='radio1'/><span id="+option_id1+">选项1</span></label>" +
+                    "<label><input type='radio' name='radio1'/><span id="+option_id2+">选项2</span></label>" +
+                    "<label><input type='radio' name='radio1'/><span id="+option_id3+">选项3</span></label>" +
+                    "<label><input type='radio' name='radio1'/><span id="+option_id4+">选项4</span></label>" +
+                    "<div class='select'  style='display: none;'><label><input type='checkbox'>加入考卷</label></div>" +
+                    "<div class='problem2'></div>";
+            var x = problemFromDB.options[3];
+            alert(x);
+            document.getElementById(problem_type_id).innerHTML = problemFromDB.problem_type;
+            document.getElementById(content_id).innerHTML = problemFromDB.content;
+            document.getElementById(option_id1).innerHTML = problemFromDB.options[0];
+            document.getElementById(option_id2).innerHTML = problemFromDB.options[1];
+            document.getElementById(option_id3).innerHTML = problemFromDB.options[2];
+            document.getElementById(option_id4).innerHTML = problemFromDB.options[3];
+          }
+        },
+        error:function (retMsg) {
+           alert("wrong");
+        }});
+
       function selectProblems() {
         // alert("shn");
-        document.getElementById("ccc").style.display="block";
+        document.getElementByClass("select").style.display="block";
       }
 
-      function showProblem() {
-        sendRequest()
-
+      function showProblems() {
+        document.getElementByClass("select").style.display= "none";
       }
 
       function senRequest (url,data,flag) {
