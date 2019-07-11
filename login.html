@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+
+	<meta charset="UTF-8">
+	<title>登录界面</title>
+</head>
+<body text-align:center>
+<style type="text/css">
+
+body {
+	background-size: 100% auto;
+	/*background-image: url(img/backgroud1.jpg);*/
+	background-repeat:no-repeat;
+	background-position:center top;
+	background-color:#e6e6e6;
+}
+
+#prog {
+	font-size: 55px;
+	font-family: fangsong;
+}
+
+#div1 {
+	margin:0 auto;
+	/*border: black 1px solid;*/
+	/*height: 100px;*/
+	width:710px;
+	margin-top: 100px;
+}
+
+#div2 {
+	margin:0 auto;
+	/*border: blue 5px solid;*/
+	width: 300px;
+	padding-top: 220px;
+}
+
+#div3 {
+	margin:0 auto;
+	width: 200px;
+	margin-top: 10px;
+}
+.input_box {
+	font-size: 20px;
+	font-family: fangsong;
+}
+</style>
+
+<!-- the first div consists of two img label and one prograh label, at the same time, 
+two img label make up a child div, and the prograh label is the other child div-->
+<div id="div1" class="center_div">
+	<!-- two img -->
+	<div id="Img" style="width: 350px; float: left; padding: 0; margin-right: 10px">
+		<!-- school badge -->
+		<img src="../static/img/school_badge.png" width="86" height="83">
+		<!-- shcool name Chinese/English -->
+		<!-- <img src="img/school_badge.png" alt="HIT" width="86" height="83"> -->
+		<img src="../static/img/school_name.png" width="258" height="91">
+	</div>
+	<!-- one prograh -->
+	<div id="prog" style="width: 350px; float: left;">
+		<p style="margin:15px">题 库 系 统</p>
+		<!-- <button type="button" onclick="test()">this is a button</button> -->
+		<!-- <button type="button" onclick="getHeight('Img')">click me get my height</button> -->
+	</div>
+</div>
+
+<!-- three input label(for user_id, password, checkword) for student login the system-->
+<div id="div2" class="center_div">
+	<!-- the width of input label is 161px, it has been detected -->
+	<div class="input_box" >用户名: <input id="username" type="text" name="username" placeholder="请输入用户名"></div>
+	<br>
+	<div class="input_box">密　码: <input id="userpassword" type="password" name="password" placeholder="请输入密码"></div>
+	<br>
+	<div class="input_box">验证码: <input type="text" id="input_checkword" name="checkword" placeholder="请输入验证码" style="width: 100px">
+	<!-- <input type="button" name="checkword" style="width: 44px"> -->
+ 	<input type = "button" name="checkword" id="vertification" value="验证" onclick="CreateCheckword()" style="width: 46px">
+ 	<!-- <div id="demo">demo</div> -->
+	</div>
+</div>
+<br><br>
+
+<!-- two button label(one for login, the other for signin) -->
+<p id="demo" style="background-color: blue"> u know this is a div</p>
+<div id="div3" class="center_div">
+	<input type="button" style="width: 120px" value="登录" onclick="login()">
+</div>
+<!--  <button id="111" style="width: 30px height:30px" onclick="document.getElementById('111').innerHTML = document.getElementById('test').style.width">click</button> -->
+
+<!-- call javascript/login.js -->
+<!--<script src="http://code.jquery.com/jquery-latest.js"></script>-->
+<script type="text/javascript">	
+	var c = document.getElementById("prog").style.height = document.getElementById("Img").offsetHeight + 'px';
+	document.write(c);
+
+	function CreateCheckword() {
+		// inital for checkword
+		var code = '';
+		// length of checkword
+		var code_length = 4;
+		// in order to change "验证" to a random 4bit checkword, whose id was setted as "vertification"/get the element
+		var vertification = document.getElementById("vertification");
+		// number&letter array
+		var letter_set = new Array(0,1,2,3,4,5,6,7,8,9,'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
+		for (var i=0; i<code_length; i++) {
+			var index = Math.floor(Math.random()*36);
+			code += letter_set[index];
+		}
+		vertification.value = code;
+		// check if js file work, don't care
+		// document.getElementById("demo").innerHTML = "ggs";
+	}
+
+	function check_user() {
+        //当前输入的用户名
+	    var temp_user = document.getElementById("username").value;
+	    var data = JSON.stringify({"username":temp_user,"password":""});
+	    var url = "/teacher/check";
+	    sendRequest(url, data, 2);
+    }
+	
+	function sendRequest(url, data, flag) {
+        //flag用于标记是哪种请求
+
+	    //发送数据
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: data,
+            contentType: "application/json",
+            success: function(retData) {
+                //将返回的字符串转换成json对象
+                var retmsg = JSON.parse(retData);
+                // alert(retmsg.code);
+                // alert(retmsg.location);
+                // alert(retmsg.status);
+                processData(retmsg, flag);
+
+                // windows.location.href = retData.location;
+            },
+            error: function (retMsg) {
+                alert("error!");
+            }
+        })
+    }
+
+    function processData(retData, flag) {
+	    //登录时flag为1
+	    if (flag === 1) {
+            alert(retData.location);
+            if (retData.status === "success") {
+                //打开新的界面
+                window.location.href = "home";
+            } else if (retData.code === 201) {
+                alert("this is 201");
+            } else {
+                // do something
+                alert("访问失败")
+            }
+        }
+	    //验证用户名是否存在时，flag为2
+	    if (flag === 2 ) {
+            if (retData.code === 200) {
+                alert("用户名输入正确");
+            }
+            else {
+                alert("无此用户");
+            }
+        }
+
+    }
+
+	function login() {
+		document.getElementById("demo").innerHTML = "succeed";
+		//用户点击登录按钮后启动该函数
+		//分别获取用户名与其密码
+		var username = document.getElementById("username").value;
+		var userpassword = document.getElementById("userpassword").value;
+		if (username.length === 0) {
+			alert("用户名不能为空！");
+		}
+		else if (userpassword.length === 0) {
+			alert("密码不能为空");
+		}
+		var data = JSON.stringify({"username":username,"userpassword":userpassword});
+        var url = "/teacher/login/";
+		sendRequest(url,data,1);
+		// 将数据发给服务端进行登录验证
+		alert(username+userpassword);
+	}
+</script>
+<script src="../static/jquery-3.4.1.min.js"></script>
+
+</body>
+</html>
